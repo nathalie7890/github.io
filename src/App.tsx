@@ -11,20 +11,27 @@ import { TbBrandNextjs } from "react-icons/tb";
 import { SiKotlin } from "react-icons/si";
 import { AiOutlineMail, AiFillGithub } from "react-icons/ai";
 import Contact from "./components/contact/contact";
+import { useState } from "react";
 
 function App() {
+  const [showNotification, setShowNotification] = useState(false);
+
   const renderContainer = (
     leftContent: React.ReactNode,
     rightContent: React.ReactNode,
     extraContainerClassName?: string,
     leftContainerExtraClassName?: string,
-    rightContainerExtraClassname?: string
+    rightContainerExtraClassname?: string,
+    id?: string
   ) => {
     const containerClassName = `flex lg:flex-row flex-col ${extraContainerClassName}`;
-    const leftContainerClassName = `lg:w-1/2 flex flex-col justify-center items-end p-12 text-dark gap-2 font-merriweather bg-light  ${leftContainerExtraClassName}`;
-    const rightContainerClassName = `lg:w-1/2 flex flex-col justify-center items-start p-12 text-light gap-2 font-montserrat bg-dark ${rightContainerExtraClassname}`;
+    const leftContainerClassName = `lg:w-1/2 flex flex-col justify-center items-end p-12 text-dark gap-2 font-merriweather bg-light h-auto ${leftContainerExtraClassName}`;
+    const rightContainerClassName = `lg:w-1/2 flex flex-col justify-center items-start p-12 text-light gap-2 font-montserrat bg-dark h-auto ${rightContainerExtraClassname}`;
     return (
-      <div className={containerClassName}>
+      <div
+        className={containerClassName}
+        id={id}
+      >
         <div className={leftContainerClassName}>{leftContent}</div>
         <div className={rightContainerClassName}>{rightContent}</div>
       </div>
@@ -32,10 +39,10 @@ function App() {
   };
 
   const renderAbout = () => {
-    const extraContainerClassName = "md:h-screen";
+    const extraContainerClassName = "lg:h-screen";
     const leftContainerClassName = "pt-36 lg:pt-0";
 
-    const leftContent = renderTitle("nathalie teh", 'web developer');
+    const leftContent = renderTitle("nathalie teh", "web developer");
     const rightContent = (
       <h1 className="font-montserrat text-sm sm:text-base">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur
@@ -78,7 +85,9 @@ function App() {
       </div>
     );
 
-    return renderContainer(leftContent, rightContent);
+    const extraContainerClassName = "min-h-96";
+
+    return renderContainer(leftContent, rightContent, extraContainerClassName);
   };
 
   const renderContact = () => {
@@ -88,21 +97,28 @@ function App() {
         <div className="flex flex-col gap-2 mt-6">
           <div className="flex gap-2 items-center">
             <AiOutlineMail size={25} />
-            <p>londonhippos@gmail.com</p>
+            <p className="md:text-base text-sm">londonhippos@gmail.com</p>
           </div>
           <div className="flex gap-2 items-center">
             <AiFillGithub size={25} />
-            <p>https://github.com/nathalie7890</p>
+            <p className="md:text-base text-sm">https://github.com/nathalie7890</p>
           </div>
         </div>
         <div className="mt-10 w-full">
-          <h1 className="mb-6 text-2xl">Leave me a message</h1>
-          <Contact />
+          <h1 className="mb-6 md:text-2xl text-xl">Leave me a message</h1>
+          <Contact setShowNotification={setShowNotification} />
         </div>
       </div>
     );
 
-    return renderContainer(leftContent, rightContent);
+    return renderContainer(
+      leftContent,
+      rightContent,
+      undefined,
+      undefined,
+      undefined,
+      "contact"
+    );
   };
 
   const renderTitle = (title: string, subtitle?: string) => {
@@ -116,8 +132,32 @@ function App() {
     );
   };
 
+  const renderMessageSent = () => {
+    return (
+      <div
+        onClick={() => setShowNotification(false)}
+        className="h-screen w-full bg-black/80 fixed top-0 z-10 flex flex-col justify-center items-center font-montserrat text-center"
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="bg-light rounded-lg space-y-4 px-36 h-48 flex flex-col justify-center items-center"
+        >
+          <h1 className="text-2xl font-semibold">Message sent!</h1>
+          <h1 className="font-semibold">I will get back to you soon.</h1>
+          <button
+            onClick={() => setShowNotification(false)}
+            className="rounded-md text-dark border border-dark hover:text-light hover:bg-dark hover:font-normal py-2 px-4 text-sm font-semibold"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="relative">
+      {showNotification && renderMessageSent()}
       <div className="fixed top-0 right-0 flex justify-end text-light/50 py-4 px-10 gap-6 font-montserrat bg-dark lg:w-1/2 w-full">
         <h1>About</h1>
         <h1>Portfolio</h1>
@@ -125,11 +165,18 @@ function App() {
       </div>
       {renderAbout()}
       {renderSkills()}
-      <div className="flex lg:flex-row flex-col">
-        <div className="lg:w-1/2 flex flex-col justify-center items-end p-12 text-dark gap-2 font-merriweather bg-light">
+      <div className="flex lg:flex-row flex-col min-h-96">
+        <div className="lg:w-1/2 flex flex-col justify-center items-end p-12 text-dark font-merriweather bg-light h-auto">
           {renderTitle("portfolio")}
         </div>
-        <div className="lg:w-1/2 flex flex-col justify-center items-start p-12 text-light gap-2 font-montserrat bg-dark"></div>
+        <div className="lg:w-1/2 flex flex-col justify-center lg:items-start p-12 text-light font-montserrat bg-dark h-full w-full overflow-x-auto">
+          <div className="flex gap-6 w-fit sm:w-full sm:flex-wrap">
+            <div className="h-28 w-28 animate-pulse rounded-full bg-medium"></div>
+            <div className="h-28 w-28 animate-pulse rounded-full bg-medium"></div>
+            <div className="h-28 w-28 animate-pulse rounded-full bg-medium"></div>
+            <div className="h-28 w-28 animate-pulse rounded-full bg-medium"></div>
+          </div>
+        </div>
       </div>
       {renderContact()}
     </div>
